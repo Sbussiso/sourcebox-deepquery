@@ -54,7 +54,7 @@
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               {% if packs %}
                 {% for pack in packs %}
-                  <li><a class="dropdown-item" href="#" onclick="selectPack('{{ pack.pack_name }}', '{{ pack.pack_id }}')">{{ pack.pack_name }}</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="selectPack('{{ pack.pack_name }}', '{{ pack.id }}')">{{ pack.pack_name }}</a></li>
                 {% endfor %}
               {% else %}
                 <li><a class="dropdown-item" href="#">No packs available</a></li>
