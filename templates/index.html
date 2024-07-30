@@ -54,7 +54,7 @@
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               {% if packs %}
                 {% for pack in packs %}
-                  <li><a class="dropdown-item" href="#">{{ pack.pack_name }}</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="selectPack('{{ pack.pack_name }}')">{{ pack.pack_name }}</a></li>
                 {% endfor %}
               {% else %}
                 <li><a class="dropdown-item" href="#">No packs available</a></li>
@@ -62,7 +62,7 @@
             </ul>
         </div>
         <br/>
-        <p>No pack data being referenced :(</p>
+        <p id="selectedPack">No pack data being referenced :(</p>
     </div>
     <div class="card-body d-flex flex-column">
         <div id="messages" class="d-flex flex-column border p-3 mb-3" style="height: 100%; overflow-y: auto;"></div>
@@ -116,6 +116,10 @@
         messageDiv.classList.add("chat-bubble", type);
         messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
         document.getElementById("messages").appendChild(messageDiv);
+    }
+
+    function selectPack(packName) {
+        document.getElementById('selectedPack').innerText = `Selected Pack: ${packName}`;
     }
 </script>
 {% endblock %}
