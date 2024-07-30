@@ -13,23 +13,15 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_secret_key')
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-API_URL = os.getenv('API_URL')
-
-# Predefined responses
-responses = {
-    "hi": "Hello! How can I help you today?",
-    "bye": "Goodbye! Have a nice day!",
-    "how are you": "I'm just a bunch of code, but thanks for asking!"
-}
-
-
+AUTH_API_URL = os.getenv('AUTH_API_URL')  # Auth API
+RAG_API_URL = os.getenv('RAG_API_URL')  # LLM API
 
 def check_authentication():
     access_token = session.get('access_token')
     if access_token:
         headers = {'Authorization': f'Bearer {access_token}'}
         try:
-            response = requests.get(f"{API_URL}/user_history", headers=headers)
+            response = requests.get(f"{AUTH_API_URL}/user_history", headers=headers)
             if response.status_code == 200:
                 return True
             else:
@@ -46,14 +38,11 @@ def check_authentication():
         flash('You need to login first', 'danger')
         return False
 
-
 @app.before_request
 def before_request():
     if request.endpoint not in ('login', 'register', 'static'):
         if not check_authentication():
             return redirect(url_for('login'))
-
-
 
 @app.route('/')
 def index():
@@ -62,7 +51,7 @@ def index():
         token = session.get('access_token')
         headers = {'Authorization': f'Bearer {token}'}
         try:
-            response = requests.get(f"{API_URL}/packman/list_packs", headers=headers)
+            response = requests.get(f"{AUTH_API_URL}/packman/list_packs", headers=headers)
             if response.status_code == 200:
                 packs = response.json()
             else:
@@ -73,16 +62,39 @@ def index():
             flash('Error fetching packs', 'danger')
     return render_template('index.html', packs=packs)
 
-
-
-
 @app.route('/chat', methods=['POST'])
 def chat():
-    user_message = request.json.get("message", "").lower()
-    response_message = responses.get(user_message, "Sorry, I don't understand that.")
-    return jsonify({"response": response_message})
+    try:
+        user_message = request.json.get("message", "").lower()
+        selected_pack = request.json.get("pack_id", "")
+        conversation_history = request.json.get("history", [])
+        
+        # Define the payload with the required parameters
+        payload = {
+            "user_message": user_message,
+            "pack_id": selected_pack,
+            "history": conversation_history
+        }
+        
+        logger.info(f"Sending payload to LLM API: {payload}")
 
+        # Send the user message to the LLM API
+        response = requests.post(f"{RAG_API_URL}/gpt-pack-response", json=payload)
+        
+        logger.info(f"Received response from LLM API: {response.status_code} {response.text}")
 
+        if response.status_code == 200:
+            response_data = response.json()
+            response_message = response_data.get("message", "Sorry, I don't understand that.")
+        else:
+            response_message = "Error communicating with the LLM API."
+            logger.error(f"Error response from LLM API: {response.status_code} {response.text}")
+
+        return jsonify({"response": response_message})
+
+    except Exception as e:
+        logger.exception("Error in chat route")
+        return jsonify({"response": "An error occurred while processing your request."}), 500
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -91,10 +103,15 @@ def login():
         password = request.form.get('password')
 
         try:
-            response = requests.post(f"{API_URL}/login", json={
+            payload = {
                 'email': email,
                 'password': password
-            })
+            }
+            logger.info(f"Sending login payload: {payload}")
+
+            response = requests.post(f"{AUTH_API_URL}/login", json=payload)
+
+            logger.info(f"Received response from AUTH API: {response.status_code} {response.text}")
 
             if response.status_code == 200:
                 access_token = response.json().get('access_token')
@@ -111,13 +128,9 @@ def login():
 
     return render_template('login.html')
 
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     return redirect("https://sourcebox-official-website-9f3f8ae82f0b.herokuapp.com/sign_up")
-
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)

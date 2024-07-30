@@ -54,7 +54,7 @@
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               {% if packs %}
                 {% for pack in packs %}
-                  <li><a class="dropdown-item" href="#" onclick="selectPack('{{ pack.pack_name }}')">{{ pack.pack_name }}</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="selectPack('{{ pack.pack_name }}', '{{ pack.pack_id }}')">{{ pack.pack_name }}</a></li>
                 {% endfor %}
               {% else %}
                 <li><a class="dropdown-item" href="#">No packs available</a></li>
@@ -74,6 +74,9 @@
 </div>
 
 <script>
+    let selectedPackId = "";
+    let conversationHistory = [];
+
     const messageTextarea = document.getElementById("message");
 
     messageTextarea.addEventListener("input", function() {
@@ -92,17 +95,19 @@
         const message = messageTextarea.value;
         if (message.trim()) {
             appendMessage("User", message, "user");
+            conversationHistory.push({ sender: "user", message: message });
 
             fetch("/chat", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ message: message })
+                body: JSON.stringify({ message: message, pack_id: selectedPackId, history: conversationHistory })
             })
             .then(response => response.json())
             .then(data => {
                 appendMessage("Bot", data.response, "bot");
+                conversationHistory.push({ sender: "bot", message: data.response });
                 messageTextarea.value = '';
                 messageTextarea.style.height = 'auto';
                 document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
@@ -118,7 +123,8 @@
         document.getElementById("messages").appendChild(messageDiv);
     }
 
-    function selectPack(packName) {
+    function selectPack(packName, packId) {
+        selectedPackId = packId;
         document.getElementById('selectedPack').innerText = `Selected Pack: ${packName}`;
     }
 </script>
