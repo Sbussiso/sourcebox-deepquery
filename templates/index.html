@@ -44,7 +44,7 @@
 
 <div class="card w-75 mx-auto">
     <div class="card-header text-center">
-        <h3>Chat with our bot</h3>
+        <h3>Chat with WikiBot</h3>
     </div>
     <div class="p-3">
         <div class="dropdown">
@@ -52,6 +52,7 @@
               Use Pack Data
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <li><a class="dropdown-item" href="#" onclick="selectPack('No Pack', '')">No Pack</a></li>
               {% if packs %}
                 {% for pack in packs %}
                   <li><a class="dropdown-item" href="#" onclick="selectPack('{{ pack.pack_name }}', '{{ pack.id }}')">{{ pack.pack_name }}</a></li>
@@ -64,6 +65,7 @@
         <br/>
         <p id="selectedPack">No pack data being referenced :(</p>
     </div>
+    <div class="p-3" id="delHistory" align="right"><button type="button" class="btn btn-danger">Delete History</button></div>
     <div class="card-body d-flex flex-column">
         <div id="messages" class="d-flex flex-column border p-3 mb-3" style="height: 100%; overflow-y: auto;"></div>
         <div class="input-group">
@@ -74,7 +76,7 @@
 </div>
 
 <script>
-    let selectedPackId = "";
+    let selectedPackId = null;
     let conversationHistory = [];
 
     const messageTextarea = document.getElementById("message");
@@ -92,17 +94,31 @@
     });
 
     function sendMessage() {
+        if (selectedPackId === null) {
+            alert("Please select an option from the dropdown. Select 'No Pack' if you do not wish to use any pack data.");
+            return;
+        }
+
         const message = messageTextarea.value;
         if (message.trim()) {
             appendMessage("User", message, "user");
             conversationHistory.push({ sender: "user", message: message });
+
+            const payload = {
+                message: message,
+                history: conversationHistory
+            };
+
+            if (selectedPackId) {
+                payload.pack_id = selectedPackId;
+            }
 
             fetch("/chat", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ message: message, pack_id: selectedPackId, history: conversationHistory })
+                body: JSON.stringify(payload)
             })
             .then(response => response.json())
             .then(data => {
@@ -127,5 +143,15 @@
         selectedPackId = packId;
         document.getElementById('selectedPack').innerText = `Selected Pack: ${packName}`;
     }
+
+    //delete history button logic
+    const delButton = document.getElementById('delHistory');
+
+    delButton.addEventListener('click', function() {
+        conversationHistory = [];
+        document.getElementById('messages').innerHTML = '';
+        alert('Conversation History Deleted');
+    });
+
 </script>
 {% endblock %}
