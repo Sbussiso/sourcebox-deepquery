@@ -135,6 +135,7 @@ def login():
 
     return render_template('login.html')
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     return redirect("https://sourcebox-official-website-9f3f8ae82f0b.herokuapp.com/sign_up")
