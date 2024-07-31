@@ -66,20 +66,26 @@ def index():
 def chat():
     try:
         user_message = request.json.get("message", "").lower()
-        selected_pack = request.json.get("pack_id", "")
+        selected_pack = request.json.get("pack_id", None)  # Default to None if not provided
         conversation_history = request.json.get("history", [])
         
         # Define the payload with the required parameters
         payload = {
             "user_message": user_message,
-            "pack_id": selected_pack,
             "history": conversation_history
         }
-        
+
+        if selected_pack:  # Include pack_id only if it is provided
+            payload["pack_id"] = selected_pack
+
         logger.info(f"Sending payload to LLM API: {payload}")
 
-        # Send the user message to the LLM API
-        response = requests.post(f"{RAG_API_URL}/gpt-pack-response", json=payload)
+        # Fetch the access token from session
+        token = session.get('access_token')
+        headers = {'Authorization': f'Bearer {token}'}
+
+        # Send the user message to the LLM API with the token in headers
+        response = requests.post(f"{RAG_API_URL}/gpt-pack-response", json=payload, headers=headers)
         
         logger.info(f"Received response from LLM API: {response.status_code} {response.text}")
 
@@ -95,6 +101,7 @@ def chat():
     except Exception as e:
         logger.exception("Error in chat route")
         return jsonify({"response": "An error occurred while processing your request."}), 500
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
