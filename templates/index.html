@@ -1,164 +1,409 @@
-{% extends "base.html" %}
-
-{% block title %}
-    Chatbot
-{% endblock %}
-
-{% block content %}
-<style>
-    .chat-bubble {
-        padding: 10px 15px;
-        border-radius: 15px;
-        margin-bottom: 10px;
-        max-width: 75%;
-    }
-    .chat-bubble.user {
-        background-color: #007bff;
-        color: white;
-        align-self: flex-end;
-    }
-    .chat-bubble.bot {
-        background-color: #e9ecef;
-        color: black;
-        align-self: flex-start;
-    }
-    .input-group {
-        position: relative;
-    }
-    .input-group textarea {
-        resize: none;
-        overflow-y: auto;
-        width: 100%;
-        max-height: 200px; /* Limit the height of the textarea */
-    }
-    .card-body {
-        display: flex;
-        flex-direction: column;
-        height: calc(100vh - 400px); /* Adjust based on header and other content */
-    }
-    #messages {
-        flex-grow: 1;
-        overflow-y: auto;
-    }
-</style>
-
-<div class="card w-75 mx-auto">
-    <div class="card-header text-center">
-        <h3>Chat with WikiBot</h3>
-    </div>
-    <div class="p-3">
-        <button type="button" id="backHome" class="btn btn-danger">Back to Home</button>
-    </div>
-    <div class="p-3">
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-              Use Pack Data
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <li><a class="dropdown-item" href="#" onclick="selectPack('No Pack', '')">No Pack</a></li>
-              {% if packs %}
-                {% for pack in packs %}
-                  <li><a class="dropdown-item" href="#" onclick="selectPack('{{ pack.pack_name }}', '{{ pack.id }}')">{{ pack.pack_name }}</a></li>
-                {% endfor %}
-              {% else %}
-                <li><a class="dropdown-item" href="#">No packs available</a></li>
-              {% endif %}
-            </ul>
-        </div>
-        <br/>
-        <p id="selectedPack">No pack data being referenced :(</p>
-    </div>
-    <div class="p-3" id="delHistory" align="right"><button type="button" class="btn btn-danger">Delete History</button></div>
-    <div class="card-body d-flex flex-column">
-        <div id="messages" class="d-flex flex-column border p-3 mb-3" style="height: 100%; overflow-y: auto;"></div>
-        <div class="input-group">
-            <textarea id="message" class="form-control" placeholder="Type a message" rows="1" required></textarea>
-            <button class="btn btn-primary input-group-text" onclick="sendMessage()">Send</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    let selectedPackId = null;
-    let conversationHistory = [];
-
-    const messageTextarea = document.getElementById("message");
-
-    messageTextarea.addEventListener("input", function() {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-    });
-
-    messageTextarea.addEventListener("keypress", function(event) {
-        if (event.key === "Enter" && !event.shiftKey) {
-            event.preventDefault();
-            sendMessage();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>DeepQuery</title>
+    <style>
+        #chatBody {
+            max-height: 70vh; /* Adjust this value as needed */
+            overflow-y: auto;
         }
-    });
-
-    function sendMessage() {
-        if (selectedPackId === null) {
-            alert("Please select an option from the dropdown. Select 'No Pack' if you do not wish to use any pack data.");
-            return;
+        #loadingSpinner {
+            display: none; /* Hide the spinner by default */
+        }
+        /* Toggle Switch Styling */
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 34px;
         }
 
-        const message = messageTextarea.value;
-        if (message.trim()) {
-            appendMessage("User", message, "user");
-            conversationHistory.push({ sender: "user", message: message });
+        .toggle-checkbox {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
 
-            const payload = {
-                message: message,
-                history: conversationHistory
-            };
+        .toggle-label {
+            position: absolute;
+            cursor: pointer;
+            background-color: #ccc;
+            border-radius: 34px;
+            width: 100%;
+            height: 100%;
+            transition: background-color 0.2s;
+        }
 
-            if (selectedPackId) {
-                payload.pack_id = selectedPackId;
+        .toggle-label::before {
+            content: "";
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            left: 4px;
+            bottom: 4px;
+            transition: transform 0.2s;
+        }
+
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4caf50;
+        }
+
+        .toggle-checkbox:checked + .toggle-label::before {
+            transform: translateX(26px);
+        }
+
+        /*chatbot formatting*/
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap; /* This ensures text wraps */
+            word-wrap: break-word; /* This allows long words to break and wrap to the next line */
+            overflow-x: hidden; /* Hides horizontal overflow */
+        }
+
+        code {
+            background-color: #f9f2f4;
+            padding: 2px 4px;
+            border-radius: 3px;
+            white-space: pre-wrap; /* Ensure inline code wraps */
+            word-wrap: break-word; /* Allow long inline code to break and wrap */
+        }
+
+        strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="p-5">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="container-md">
+            <!--return to sourcebox home page-->
+            <button type="button" id="sourceboxHome" class="btn btn-danger" onclick="goToHome()">Back to Home</button>
+            <br/>
+            <br/>
+            <div class="p-3">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                      Use Pack Data
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <li><a class="dropdown-item" href="#" onclick="selectPack('No Pack', '')">No Pack</a></li>
+                      {% if codepacks %}
+                        {% for codepack in codepacks %}
+                          <li><a class="dropdown-item" href="#" onclick="selectPack('{{ codepack.pack_name }}', '{{ codepack.id }}')">{{ codepack.pack_name }}</a></li>
+                        {% endfor %}
+                      {% else %}
+                        <li><a class="dropdown-item" href="#">No packs available</a></li>
+                      {% endif %}
+                    </ul>
+                </div>
+                <br/>
+                <p id="selectedPack">No pack data being referenced :(</p>
+            </div> 
+        </div>
+        <!-- Chatbot body -->
+        <div class="container mt-5" id="chatbotDisplay">
+            <!-- Toggle Switch -->
+            <div class="toggle-switch">
+                <input type="checkbox" id="toggle" class="toggle-checkbox">
+                <label for="toggle" class="toggle-label"></label>
+            </div>
+            <!--info icon-->
+            <div style="display: inline-flex; align-items: center;">
+                <p style="margin-right: 8px;">Chat Model</p>
+                <span tabindex="0" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="right" data-bs-content="You can query your code directly using our vector search algorithm or pass your data to our model for interpretation (recommended)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-square" viewBox="0 0 16 16">
+                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                    </svg>
+                </span>
+            </div>
+            
+            <br/>
+            <div class="card">
+                <div class="card-header">
+                    Chatbot
+                </div>
+                <div class="card-body" id="chatBody">
+                    <!-- Chat messages will go here -->
+                </div>
+            </div>
+        </div>
+        <!--Prompt form-->
+        <div class="container-md" id="promptForm">
+            <form id="promptFormInner" method="POST" action="javascript:void(0);" onsubmit="submitPrompt()">
+                <select id="promptSelect" class="form-select" aria-label="Default select example" onchange="showCustomPrompt()">
+                    <option selected>Select prompt or "custom prompt" to use your own</option>
+                    <!-- Options will be dynamically generated -->
+                </select>
+                <div id="customPromptDiv" class="mt-3" style="display: none;">
+                    <textarea id="customPromptTextarea" class="form-control" rows="3" placeholder="Enter your custom prompt here..."></textarea>
+                </div>
+                <input type="hidden" id="queryVector" name="queryVector">
+                <br/>
+                <button type="submit" class="btn btn-primary" id="submitPromptButton">Submit Prompt</button>
+                <div class="spinner-border text-primary" role="status" id="submitSpinner" style="display: none;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        // SourceBox home button
+        function goToHome() {
+            console.log("Navigating to SourceBox home...");
+            window.location.href = 'https://sourcebox-official-website-9f3f8ae82f0b.herokuapp.com/';
+        }
+    
+        // Global conversation history and selected pack ID
+        let selectedPackId = null;
+        let conversationHistory = [];
+    
+        // Function to select a pack by name and ID
+        function selectPack(packName, packId) {
+            console.log(`Selected pack: ${packName}, ID: ${packId}`);
+            selectedPackId = packId;
+            document.getElementById('selectedPack').innerText = `Selected Pack: ${packName}`;
+        }
+    
+        // Enable popovers for additional information
+        document.addEventListener('DOMContentLoaded', function () {
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+            const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+            console.log("Popovers enabled");
+        });
+    
+        // Show or hide the custom prompt textarea based on the user's selection
+        function showCustomPrompt() {
+            const selectElement = document.getElementById('promptSelect');
+            const customPromptDiv = document.getElementById('customPromptDiv');
+            if (selectElement.value === 'Custom Prompt') {
+                console.log("Custom prompt selected, showing textarea...");
+                customPromptDiv.style.display = 'block';
+            } else {
+                console.log("Predefined prompt selected, hiding custom prompt textarea...");
+                customPromptDiv.style.display = 'none';
             }
-
-            fetch("/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            })
-            .then(response => response.json())
-            .then(data => {
-                appendMessage("Bot", data.response, "bot");
-                conversationHistory.push({ sender: "bot", message: data.response });
-                messageTextarea.value = '';
-                messageTextarea.style.height = 'auto';
-                document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
-            })
-            .catch(error => console.error("Error:", error));
         }
-    }
-
-    function appendMessage(sender, message, type) {
-        const messageDiv = document.createElement("div");
-        messageDiv.classList.add("chat-bubble", type);
-        messageDiv.innerHTML = `<strong>${sender}:</strong> ${message}`;
-        document.getElementById("messages").appendChild(messageDiv);
-    }
-
-    function selectPack(packName, packId) {
-        selectedPackId = packId;
-        document.getElementById('selectedPack').innerText = `Selected Pack: ${packName}`;
-    }
-
-    //delete history button logic
-    const delButton = document.getElementById('delHistory');
-
-    delButton.addEventListener('click', function() {
-        conversationHistory = [];
-        document.getElementById('messages').innerHTML = '';
-        alert('Conversation History Deleted');
-    });
-
-    //back to home button logic
-    document.getElementById('backHome').addEventListener('click', function() {
-        window.location.href = 'https://sourcebox-official-website-9f3f8ae82f0b.herokuapp.com/'; //sourcebox home page
-    });
-</script>
-{% endblock %}
+    
+        // Set the query vector based on the selected or custom prompt
+        function setQueryVector() {
+            const selectElement = document.getElementById('promptSelect');
+            const customPromptTextarea = document.getElementById('customPromptTextarea');
+            const queryVectorInput = document.getElementById('queryVector');
+    
+            if (selectElement.value === 'Custom Prompt') {
+                queryVectorInput.value = customPromptTextarea.value;
+                console.log(`Custom prompt set: ${customPromptTextarea.value}`);
+            } else {
+                queryVectorInput.value = selectElement.value;
+                console.log(`Predefined prompt set: ${selectElement.value}`);
+            }
+        }
+    
+        // Format the AI response, handling code and text formatting
+        function formatResponse(response) {
+            console.log("Formatting AI response...");
+            let formattedText = response.replace(/```(.*?)```/gs, '<pre><code>$1</code></pre>');
+            formattedText = formattedText.replace(/`([^`]+)`/g, '<code>$1</code>');
+            formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            formattedText = formattedText.replace(/\n/g, '<br>');
+            return formattedText;
+        }
+    
+        // Format the raw vector search results to display documents more neatly
+        function formatRawResults(results) {
+            console.log("Formatting raw vector search results...");
+            let formattedResults = '';
+    
+            Object.keys(results).forEach(docKey => {
+                let content = results[docKey]
+                    .replace(/\n/g, '<br>')     // Ensure newlines are preserved with <br>
+                    .replace(/(.{100})/g, '$1<br>') // Break overly long lines after 100 characters
+                    .replace(/ {2}/g, '&nbsp;&nbsp;') // Preserve indentation by replacing spaces with non-breaking spaces
+                    .replace(/("""|''')/g, '<strong>$1</strong>') // Highlight triple quotes (both single and double)
+                    .replace(/"(.*?)"/g, '<code>"$1"</code>') // Highlight string literals with double quotes
+                    .replace(/'(.*?)'/g, '<code>\'$1\'</code>'); // Highlight string literals with single quotes
+    
+                formattedResults += `
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <strong>${docKey}:</strong>
+                            <pre style="white-space: pre-wrap; word-wrap: break-word;">${content}</pre>
+                        </div>
+                    </div>
+                `;
+            });
+    
+            return formattedResults;
+        }
+    
+        // Submit the prompt to the appropriate route based on the toggle switch state
+        function submitPrompt() {
+            // Check if a pack or "No Pack" is selected
+            if (selectedPackId === null) {
+                alert('You must select a pack or choose "No Pack" before submitting.');
+                return;  // Stop the submission if no pack is selected
+            }
+    
+            setQueryVector();
+            const queryVector = document.getElementById('queryVector').value;
+            console.log(`Submitting prompt: ${queryVector}`);
+    
+            // Update conversation history with the user's query
+            conversationHistory.push(`USER QUERY: ${queryVector}`);
+    
+            // Prepare the data to be sent to the backend
+            const dataToSend = {
+                queryVector: queryVector,
+                history: conversationHistory.join('\n'),
+                pack_id: selectedPackId
+            };
+    
+            console.log("Data being sent:", dataToSend);
+    
+            // Show the loading spinner and hide the submit button during processing
+            const submitPromptButton = document.getElementById('submitPromptButton');
+            const submitSpinner = document.getElementById('submitSpinner');
+            submitPromptButton.style.display = 'none';
+            submitSpinner.style.display = 'inline-block';
+    
+            // Determine whether to use the chatbot route or the raw vector search route
+            const isChatModelOn = document.getElementById('toggle').checked;
+            const targetUrl = isChatModelOn ? '/chatbot' : '/raw-vector-query';
+    
+            console.log(`Sending POST request to ${targetUrl}...`);
+            fetch(targetUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataToSend)
+            })
+            .then(response => {
+                console.log(`Received response status: ${response.status}`);
+                return response.json().then(data => ({ status: response.status, data }));
+            })
+            .then(({ status, data }) => {
+                const chatBody = document.getElementById('chatBody');
+    
+                if (status === 200 && data.results) {
+                    console.log("Results received, formatting...");
+    
+                    let formattedResults;
+                    if (isChatModelOn) {
+                        formattedResults = formatResponse(data.results);
+                        conversationHistory.push(`AI RESPONSE: ${data.results}`);
+                    } else {
+                        formattedResults = formatRawResults(data.results);
+                    }
+    
+                    const userQueryHtml = `<div class="card mb-2"><div class="card-body"><strong>User:</strong><br>${queryVector}</div></div>`;
+                    const resultsHtml = `<div class="card mb-2"><div class="card-body"><strong>Results:</strong><br>${formattedResults}</div></div>`;
+                    chatBody.innerHTML += userQueryHtml + resultsHtml;
+    
+                    // Scroll to the bottom of the chat body
+                    chatBody.scrollTop = chatBody.scrollHeight;
+    
+                } else if (data.error) {
+                    console.error(`Error received from server: ${data.error}`);
+                    const errorElement = document.createElement('div');
+                    errorElement.className = 'mb-2 text-danger';
+                    errorElement.textContent = `Error: ${data.error}`;
+                    chatBody.appendChild(errorElement);
+                } else {
+                    console.error('Unexpected response format:', data);
+                    const noResultsElement = document.createElement('div');
+                    noResultsElement.className = 'mb-2 text-warning';
+                    noResultsElement.textContent = `No results found for this query.`;
+                    chatBody.appendChild(noResultsElement);
+                }
+            })
+            .catch(error => {
+                console.error('Error occurred during fetch:', error);
+                const errorElement = document.createElement('div');
+                errorElement.className = 'mb-2 text-danger';
+                errorElement.textContent = `Error: ${error}`;
+                chatBody.appendChild(errorElement);
+            })
+            .finally(() => {
+                console.log("Request finished, resetting UI...");
+                submitSpinner.style.display = 'none';
+                submitPromptButton.style.display = 'inline-block';
+            });
+        }
+    
+        // Trigger prompt submission on pressing "Enter"
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && (document.activeElement.id === 'customPromptTextarea' || document.activeElement.id === 'promptSelect')) {
+                event.preventDefault();  // Prevent default form submission or page reload
+                submitPrompt();  // Submit the prompt
+            }
+        });
+    
+        // Populate the select element with prompts from the backend when the page is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Page loaded, fetching prompts...");
+            const prompts = {{ suggestions | tojson }};
+            const selectElement = document.getElementById('promptSelect');
+            prompts.forEach(function(prompt) {
+                const option = document.createElement('option');
+                option.value = prompt;
+                option.textContent = prompt;
+                selectElement.appendChild(option);
+            });
+    
+            // Add a custom prompt option at the end
+            const customOption = document.createElement('option');
+            customOption.value = 'Custom Prompt';
+            customOption.textContent = 'Custom Prompt';
+            selectElement.appendChild(customOption);
+            console.log("Prompts populated");
+        });
+    
+        // Display flash messages on the page
+        function displayFlashMessage(message, category) {
+            console.log(`Displaying flash message: ${message}, category: ${category}`);
+            const flashMessageContainer = document.createElement('div');
+            flashMessageContainer.className = `alert alert-${category} alert-dismissible fade show`;
+            flashMessageContainer.role = 'alert';
+            flashMessageContainer.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.insertBefore(flashMessageContainer, document.body.firstChild);
+    
+            // Automatically remove the flash message after 5 seconds
+            setTimeout(() => {
+                flashMessageContainer.classList.remove('show');
+                flashMessageContainer.addEventListener('transitionend', () => flashMessageContainer.remove());
+            }, 5000);
+        }
+    </script>
+    
+    
+    
+    
+    
+</body>
+</html>
