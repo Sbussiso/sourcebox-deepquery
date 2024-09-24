@@ -77,6 +77,27 @@
         strong {
             font-weight: bold;
         }
+
+        /* Make sure the chatBody takes up full width on mobile */
+        @media (max-width: 768px) {
+            #chatbotDisplay {
+                padding-left: 0;
+                padding-right: 0;
+                margin-left: 0;
+                margin-right: 0;
+            }
+
+            .card {
+                width: 100%; /* Ensure the card takes up the full width of the container */
+            }
+
+            #chatBody {
+                height: 60vh; /* Make chat body larger on mobile */
+                overflow-y: auto;
+                padding-left: 0;
+                padding-right: 0;
+            }
+        }
     </style>
 </head>
 <body>
