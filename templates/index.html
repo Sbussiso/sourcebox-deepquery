@@ -99,6 +99,12 @@
                 padding-right: 0;
             }
         }
+
+        @media (max-width: 768px) {
+            .btn-full-width {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -118,29 +124,38 @@
         {% endwith %}
 
         <div class="container-md">
-            <!--return to sourcebox home page-->
-            <button type="button" id="sourceboxHome" class="btn btn-danger" onclick="goToHome()">Back to Home</button>
-            <br/>
-            <br/>
-            <div class="p-3">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                      Use Pack Data
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                      <li><a class="dropdown-item" href="#" onclick="selectPack('No Pack', '')">No Pack</a></li>
-                      {% if codepacks %}
-                        {% for codepack in codepacks %}
-                          <li><a class="dropdown-item" href="#" onclick="selectPack('{{ codepack.pack_name }}', '{{ codepack.id }}')">{{ codepack.pack_name }}</a></li>
-                        {% endfor %}
-                      {% else %}
-                        <li><a class="dropdown-item" href="#">No packs available</a></li>
-                      {% endif %}
-                    </ul>
+            <!-- Return to sourcebox home page -->
+            <div class="row">
+                <div class="col-12"> <!-- Full width on mobile screens -->
+                    <button type="button" id="sourceboxHome" class="btn btn-danger btn-full-width" onclick="goToHome()">Back to Home</button>
                 </div>
-                <br/>
-                <p id="selectedPack">No pack data being referenced :(</p>
-            </div> 
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-12"> <!-- Full width on mobile screens -->
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle btn-full-width" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                          Use Pack Data
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="#" onclick="selectPack('No Pack', '')">No Pack</a></li>
+                            {% if codepacks %}
+                                {% for codepack in codepacks %}
+                                    <li><a class="dropdown-item" href="#" onclick="selectPack('{{ codepack.pack_name }}', '{{ codepack.id }}')">{{ codepack.pack_name }}</a></li>
+                                {% endfor %}
+                            {% else %}
+                                <li><a class="dropdown-item" href="#">No packs available</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-12">
+                    <p id="selectedPack">No pack data being referenced :(</p>
+                </div>
+            </div>
         </div>
         <!-- Chatbot body -->
         <div class="container mt-5" id="chatbotDisplay">
