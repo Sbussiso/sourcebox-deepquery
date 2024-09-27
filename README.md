@@ -15,11 +15,11 @@
 
 ### Query your data with or without AI intervention.
 
-> Query your data with a chatbot
+> ***Query your data with a chatbot***
 
 <br/>
 
-> Query your data directly without a chatbot
+> ***Query your data directly without a chatbot***
 
 <br/>
 
