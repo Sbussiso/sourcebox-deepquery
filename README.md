@@ -7,7 +7,7 @@
 
 <br/>
 
-> DeepQuery is different than DeepQuery Code. The main difference is DeepQuery Code is for github projects and, code related files while DeepQuery is for everything else.
+> DeepQuery is different than DeepQuery Code. The main difference is DeepQuery Code is for github projects and code related files while DeepQuery is for everything else.
 
 <br/>
 
