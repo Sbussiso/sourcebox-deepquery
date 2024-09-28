@@ -7,6 +7,10 @@
 
 <br/>
 
+> DeepQuery is different than DeepQuery Code. The main difference is DeepQuery Code is for github projects and, code related files while DeepQuery is for everything else.
+
+<br/>
+
 ### Switch back and fourth between packs quick and easy
 
 > DeepQuery makes it very easy to change packs and subjects. just click on ***"Use pack data"*** and select a different pack than the ones you are using.
