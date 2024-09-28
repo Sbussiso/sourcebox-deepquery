@@ -23,6 +23,10 @@
 > ***Raw query your data directly without a chatbot***. Once you select your pack of choice, you can query just your pack data without a chat model! Once you enter your query you will recieve the vector search algorithm results of your query displaying the relevent bits of your data.
 
 <br/>
+
+> ***Note:*** If you select "No Pack" you cannot preform a raw query. Raw queries can only be performed with pack data.
+
+<br/>
 <br/>
 <br/>
 <br/>
