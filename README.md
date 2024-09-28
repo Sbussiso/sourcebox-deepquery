@@ -40,7 +40,7 @@
 
 <br/>
 
-### step by step tutorial
+> ### First go to (DeepQuery link)
 
 <br/>
 
