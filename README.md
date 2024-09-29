@@ -3,7 +3,7 @@
 <br/>
 <br/>
 
-> DeepQuery is where you put your data to work! Effortlessly connect your packs to DeepQuery and and enjoy your customized AI chatbot connected to all of your pack data.
+> DeepQuery is your solution for turning static data into dynamic, actionable insights. With DeepQuery, you can effortlessly connect your data packs and interact with your customized AI chatbot, enabling you to extract valuable information, explore complex data sets, and gain deeper understanding from your resources. Designed to support a wide range of use cases, DeepQuery allows you to query, analyze, and visualize your data with or without AI assistance, making it a versatile tool for both technical and non-technical users.
 
 <br/>
 
