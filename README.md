@@ -106,7 +106,11 @@
 
 ### Using DeepQuery with pack data
 
-> First make sure you have pack data to use. If you dont have any pack data go to PackMan and create one. You can learn about PackMan and how to create packs here: (link to creating packs section of packman docs)
+> First make sure you have pack data to use. If you dont have any pack data go to PackMan and create one.
+
+<br/>
+
+> You can learn about PackMan and how to create packs here: (link to creating packs section of packman docs)
 
 <br/>
 
