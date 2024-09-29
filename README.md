@@ -54,8 +54,6 @@
 
 ### Custom
 
-<br/>
-
 > To create more tailored and specific interactions, you can use the Custom Prompt feature to craft your own queries. This allows you to go beyond the standard AI-generated prompts and ask questions that are directly relevant to your unique data and research needs.
 
 <br/>
