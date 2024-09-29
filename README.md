@@ -82,5 +82,27 @@
 
 <br/>
 
+### Using DeepQuery without pack data
+
+> Click on ***"select pack"*** then choose the option ***"No Pack"***.
+
+<br/>
+
+> Toggle the chatbot on with the toggle button
+
+<br/>
+
+> In the chatbot select one of the pre generated prompts or select ***"Custom Prompt"*** then add your custom prompt.
+
+<br/>
+
+> Once you have your prompt either press the Enter key on your machine or the button to submit your prompt
+
+<br/>
+
+> Enjoy your results!
+
+<br/>
+
 
 
