@@ -122,7 +122,7 @@
 
 <br/>
 
-> In the chatbot select one of the pre generated prompts or select ***"Custom Prompt"*** then add your custom prompt.
+> In the chatbot select one of the pre generated prompts ***or*** select ***"Custom Prompt"*** then add your custom prompt.
 
 <br/>
 
@@ -131,3 +131,34 @@
 <br/>
 
 > Enjoy your results!
+
+
+<br/>
+
+### Using Raw Vector Searches with DeepQuery
+
+> First make sure you have pack data to use. If you dont have any pack data go to PackMan and create one.
+
+<br/>
+
+> You can learn about PackMan and how to create packs here: (link to creating packs section of packman docs)
+
+<br/>
+
+> Click on ***"select pack"*** then choose the pack you want to use.
+
+<br/>
+
+> Make sure the chatbot toggle button is off
+
+<br/>
+
+> In the chatbot select one of the pre generated prompts ***or*** select ***"Custom Prompt"*** then add your custom prompt.
+
+<br/>
+
+> Once you have your prompt either press the Enter key on your machine or the button to submit your prompt
+
+<br/>
+
+> Enjoy your raw file results!
