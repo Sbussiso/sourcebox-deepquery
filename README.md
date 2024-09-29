@@ -3,11 +3,17 @@
 <br/>
 <br/>
 
-> DeepQuery is your solution for turning static data into dynamic, actionable insights. With DeepQuery, you can effortlessly connect your data packs and interact with your customized AI chatbot, enabling you to extract valuable information, explore complex data sets, and gain deeper understanding from your resources. Designed to support a wide range of use cases, DeepQuery allows you to query, analyze, and visualize your data with or without AI assistance, making it a versatile tool for both technical and non-technical users.
+> DeepQuery is your solution for turning static data into dynamic, actionable insights. With DeepQuery, you can effortlessly connect your data packs and interact with your customized AI chatbot, enabling you to extract valuable information, explore complex data sets, and gain deeper understanding from your resources.
 
 <br/>
 
 > DeepQuery is different than DeepQuery Code. The main difference is DeepQuery Code is for github projects and code related files while DeepQuery is for everything else.
+
+<br/>
+
+### How it works
+
+> DeepQuery connects directly to your structured data packs, allowing you to ask complex questions and get relevant responses based on the content within these packs. By utilizing a vector search algorithm, DeepQuery identifies and retrieves the most pertinent data points, helping you find exactly what you’re looking for with minimal effort.
 
 <br/>
 
