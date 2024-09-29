@@ -40,7 +40,7 @@
 
 ### Choose a selection of AI generated prompts or use your own custom ones.
 
-> Dont know what prompt to use? No worries just use one of ours! With DeepQuery you can simply select one of the generated prompts.
+> Dont know what prompt to use? No worries just use one of ours! DeepQuery offers a variety of pre-generated AI prompts to help you explore your data effortlessly. These prompts are designed to cover a broad range of scenarios and typical queries, making it easy for you to engage with your data even if you’re new to the platform or unfamiliar with the content. Simply browse through the available options and select a prompt that fits your needs. Whether you’re looking to get a quick summary, identify key insights, or dive into specific sections of your dataset, these AI-generated prompts provide a solid starting point to get the most out of your data without needing to craft a detailed question yourself.
 
 <br/>
 
