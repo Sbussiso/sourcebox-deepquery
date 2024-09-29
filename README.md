@@ -40,11 +40,23 @@
 
 ### Choose a selection of AI generated prompts or use your own custom ones.
 
-> Dont know what prompt to use? No worries just use one of ours! DeepQuery offers a variety of pre-generated AI prompts to help you explore your data effortlessly. These prompts are designed to cover a broad range of scenarios and typical queries, making it easy for you to engage with your data even if you’re new to the platform or unfamiliar with the content. Simply browse through the available options and select a prompt that fits your needs. Whether you’re looking to get a quick summary, identify key insights, or dive into specific sections of your dataset, these AI-generated prompts provide a solid starting point to get the most out of your data without needing to craft a detailed question yourself.
+> Dont know what prompt to use? No worries just use one of ours! DeepQuery offers a variety of pre-generated AI prompts to help you explore your data effortlessly. These prompts are designed to cover a broad range of scenarios and typical queries, making it easy for you to engage with your data even if you’re new to the platform or unfamiliar with the content.
 
 <br/>
 
-> To use your own custom prompts select ***"Custom Prompt"*** and enter your own custom prompts to the chatbot.
+>  Simply browse through the available options and select a prompt that fits your needs. Whether you’re looking to get a quick summary, identify key insights, or dive into specific sections of your dataset, these AI-generated prompts provide a solid starting point to get the most out of your data without needing to craft a detailed question yourself.
+
+<br/>
+
+> To create more tailored and specific interactions, you can use the Custom Prompt feature to craft your own queries. This allows you to go beyond the standard AI-generated prompts and ask questions that are directly relevant to your unique data and research needs.
+
+<br/>
+
+>  To get started, simply select the ***“Custom Prompt”*** option, type your desired question, command, or prompt into the input field, and submit it to the chatbot. The AI will then analyze your input using the context provided by your selected data pack, delivering responses that are finely tuned to your request. This flexibility enables you to explore complex topics, retrieve detailed insights, or address highly specific use cases that may not be covered by the default prompts.
+
+<br/>
+
+> Custom prompts are ideal when you want precise answers, perform in-depth analysis, or interact with your data in a way that aligns with your specific project requirements.
 
 <br/>
 <br/>
