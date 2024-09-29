@@ -32,9 +32,9 @@
 
 <br/>
 
-### Next feature
+### Choose a selection of AI generated prompts or use your own custom ones.
 
-> something
+> Dont know what prompt to use? No worries just use one of ours! With DeepQuery you can simply select one of the generated prompts or you can select ***"Custom Prompt"*** and enter your own custom prompts.
 
 <br/>
 <br/>
