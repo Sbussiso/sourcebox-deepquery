@@ -78,6 +78,7 @@
             text-align: center; /* Center the text */
         }
 
+
         /* Center and Style Submit Prompt Button */
         #submitPromptButton {
             width: 100%;
@@ -183,8 +184,8 @@
             position: relative;
             overflow: hidden;
         }
-        
-        #chatbotDisplay::before {
+
+        .shine-effect::before {
             content: '';
             position: absolute;
             top: 0;
@@ -196,7 +197,8 @@
             animation: shineEffect 2s infinite;
             pointer-events: none;
         }
-        
+
+
         @keyframes shineEffect {
             0% {
                 left: -100%;
@@ -271,6 +273,53 @@
                 padding-left: 0;
                 padding-right: 0;
             }
+
+            /* Chat message styling */
+            .chat-message {
+                background: linear-gradient(135deg, #f4f4f4, #e2e3e5);
+                border-radius: 10px;
+                padding: 10px 15px;
+                margin-bottom: 10px;
+                max-width: 80%;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease, opacity 0.3s ease;
+            }
+
+            .chat-message.user {
+                background-color: #d1e7dd;
+                align-self: flex-end;
+            }
+
+            .chat-message.ai {
+                background-color: #e2e3e5;
+                align-self: flex-start;
+            }
+
+            /* Hover effect for chat messages */
+            .chat-message:hover {
+                transform: scale(1.05) translateY(0);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-message {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .chat-message:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
@@ -296,7 +345,7 @@
                 <div class="d-flex align-items-center">
                     <!-- Toggle Switch -->
                     <div class="toggle-switch me-3">
-                        <input type="checkbox" id="toggle" class="toggle-checkbox">
+                        <input type="checkbox" id="toggle" class="toggle-checkbox" checked>
                         <label for="toggle" class="toggle-label"></label>
                     </div>
                     <!--info icon-->
@@ -338,11 +387,11 @@
                                     <li><a class="dropdown-item" href="#" onclick="selectPack('{{ codepack.pack_name }}', '{{ codepack.id }}')">{{ codepack.pack_name }}</a></li>
                                 {% endfor %}
                             {% else %}
-                                <li><a class="dropdown-item" href="#">No packs available</a></li>
+                                <li><a class="dropdown-item text-white" href="#">No packs available</a></li>
                             {% endif %}
                         </ul>
                     </div>
-                    <p id="selectedPack">No pack data being referenced :(</p>
+                    <p id="selectedPack" class="text-white">No pack option is being referenced :(</p>
                 </div>
                 <div class="col-md-6 text-end">
                     <select id="promptSelect" class="form-select mb-3" aria-label="Default select example" onchange="showCustomPrompt()">
@@ -483,11 +532,14 @@
     
             console.log("Data being sent:", dataToSend);
     
-            // Show the loading spinner and hide the submit button during processing
+            // Show the loading spinner and add the shine effect class
             const submitPromptButton = document.getElementById('submitPromptButton');
             const submitSpinner = document.getElementById('submitSpinner');
+            const chatbotDisplay = document.getElementById('chatbotDisplay');
+            
             submitPromptButton.style.display = 'none';
             submitSpinner.style.display = 'inline-block';
+            chatbotDisplay.classList.add('shine-effect');
     
             // Determine whether to use the chatbot route or the raw vector search route
             const isChatModelOn = document.getElementById('toggle').checked;
@@ -551,6 +603,7 @@
                 console.log("Request finished, resetting UI...");
                 submitSpinner.style.display = 'none';
                 submitPromptButton.style.display = 'inline-block';
+                chatbotDisplay.classList.remove('shine-effect'); // Remove the shine effect class
             });
         }
     
