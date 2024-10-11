@@ -9,7 +9,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 #generates prompt suggestions for user
 def generate_suggestions(prompt):
     if prompt == None:
-        default_prompt = "generate 5 coding prompts as a user asking about their own existing codebase. Be specific"
+        default_prompt = "generate 5 prompts as a user asking about their own existing data. Be specific"
     else:
         default_prompt = prompt
 
@@ -21,8 +21,8 @@ def generate_suggestions(prompt):
                                         You create the most relevent prompts to the data you are given
                                         Your response must be in the following format for regex processing:
          
-                                        -- where is my database being used and referenced? --;
-                                        -- where is encryption used in my code? --;
+                                        -- what is this data about? --;
+                                        -- how many customers from this list live in the state of California? --;
                                         -- the third prompt --;
                                         -- the fourth prompt --;
                                         -- the fith prompt --;

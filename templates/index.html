@@ -6,19 +6,104 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>DeepQuery</title>
     <style>
-        #chatBody {
-            max-height: 70vh; /* Adjust this value as needed */
-            overflow-y: auto;
-            height: 30vh;
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle, #000000, #ffffff);
+            background-size: 200% 200%;
+            animation: smokeAnimation 15s ease infinite;
+            color: #343a40;
+            transition: background-color 0.3s, color 0.3s;
         }
-        #loadingSpinner {
-            display: none; /* Hide the spinner by default */
+
+        @keyframes smokeAnimation {
+            0% { background-position: 0% 0%; }
+            25% { background-position: 50% 50%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 50% 50%; }
+            100% { background-position: 0% 0%; }
         }
+
+        .text-white {
+            color: white;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        /* Centering and Styling the Button and Dropdown */
+        .centered {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .btn-full-width {
+            width: 100%;
+            max-width: 600px; /* Increased width */
+            margin: 5px 0; /* Reduced margin for closer spacing */
+            padding: 15px; /* Thicker button */
+            font-size: 1.1em; /* Slightly larger text */
+        }
+
+        .dropdown {
+            width: auto; /* Allow the dropdown to be thinner */
+            margin: 0 10px; /* Adjust margin to bring it closer to the blue text */
+        }
+
+        .dropdown-toggle {
+            width: 100%;
+            font-size: 1.2em; /* Make the dropdown larger */
+            padding: 10px 20px; /* Make the button longer */
+        }
+
+        /* Button Styles */
+        .btn {
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .btn:hover {
+            background-color: black;
+            transform: translateY(-2px);
+        }
+
+        /* Selected Pack Styling */
+        #selectedPack {
+            font-size: 1.5em; /* Larger font size */
+            font-weight: bold; /* Bold text */
+            color: blue; /* Ensure the text is blue */
+            margin-top: 10px; /* Adjust margin to position it closer */
+            text-align: center; /* Center the text */
+        }
+
+        /* Center and Style Submit Prompt Button */
+        #submitPromptButton {
+            width: 100%;
+            max-width: 600px; /* Increased width */
+            padding: 15px; /* Thicker button */
+            font-size: 1.1em; /* Slightly larger text */
+            margin: 20px auto 5px; /* Center the button and reduce bottom margin */
+            display: block;
+        }
+
+        /* Animate Prompt Selection */
+        #promptSelect {
+            transition: all 0.3s ease;
+        }
+
+        #promptSelect:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
         /* Toggle Switch Styling */
         .toggle-switch {
             position: relative;
             width: 60px;
             height: 34px;
+            margin-bottom: 20px;
         }
 
         .toggle-checkbox {
@@ -34,7 +119,7 @@
             border-radius: 34px;
             width: 100%;
             height: 100%;
-            transition: background-color 0.2s;
+            transition: background-color 0.3s;
         }
 
         .toggle-label::before {
@@ -46,7 +131,7 @@
             height: 26px;
             left: 4px;
             bottom: 4px;
-            transition: transform 0.2s;
+            transition: transform 0.3s;
         }
 
         .toggle-checkbox:checked + .toggle-label {
@@ -55,6 +140,93 @@
 
         .toggle-checkbox:checked + .toggle-label::before {
             transform: translateX(26px);
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+
+        .dropdown-menu.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Loading Spinner */
+        .spinner-border {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Card Styles */
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Chatbot Display */
+        #chatbotDisplay {
+            padding: 20px;
+            background: linear-gradient(135deg, #333333, #1a1a1a); /* Dark gradient for base */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #chatbotDisplay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(0, 0, 0, 0) 100%);
+            transform: skewX(-25deg);
+            animation: shineEffect 2s infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes shineEffect {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Media Queries for Mobile */
+        @media (max-width: 768px) {
+            .btn-full-width {
+                width: 100%;
+            }
+
+            #chatBody {
+                height: 40vh;
+            }
+        }
+
+        #chatBody {
+            max-height: 70vh; /* Adjust this value as needed */
+            overflow-y: auto;
+            height: 70vh; /* Increased height for more conversation space */
+            background: radial-gradient(circle, #ffffff, #000000); /* Same background as body */
+            background-size: 200% 200%; /* Same background size */
+            animation: smokeAnimation 15s ease infinite; /* Same animation */
+        }
+        #loadingSpinner {
+            display: none; /* Hide the spinner by default */
         }
 
         /*chatbot formatting*/
@@ -100,12 +272,6 @@
                 padding-right: 0;
             }
         }
-
-        @media (max-width: 768px) {
-            .btn-full-width {
-                width: 100%;
-            }
-        }
     </style>
 </head>
 <body>
@@ -124,19 +290,46 @@
             {% endif %}
         {% endwith %}
 
-        <div class="container-md">
-            <!-- Return to sourcebox home page -->
-            <div class="row">
-                <div class="col-12"> <!-- Full width on mobile screens -->
-                    <button type="button" id="sourceboxHome" class="btn btn-danger btn-full-width" onclick="goToHome()">Back to Home</button>
+        <!-- Chatbot body -->
+        <div class="container mt-5" id="chatbotDisplay">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center">
+                    <!-- Toggle Switch -->
+                    <div class="toggle-switch me-3">
+                        <input type="checkbox" id="toggle" class="toggle-checkbox">
+                        <label for="toggle" class="toggle-label"></label>
+                    </div>
+                    <!--info icon-->
+                    <div class="d-flex align-items-center">
+                        <p class="mb-0 me-2 text-white">Chat Model</p>
+                        <span tabindex="0" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="right" data-bs-content="You can query your code directly using our vector search algorithm or pass your data to our model for interpretation (recommended)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-info-square" viewBox="0 0 16 16">
+                                <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <!-- Back to Home Button -->
+                <button type="button" id="sourceboxHome" class="btn btn-danger" onclick="goToHome()">Back to Home</button>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    Chatbot
+                </div>
+                
+                <div class="card-body" id="chatBody">
+                    <!-- Chat messages will go here -->
                 </div>
             </div>
-            <br/>
-            <div class="row">
-                <div class="col-12"> <!-- Full width on mobile screens -->
+
+            <!-- New row for prompt selection and buttons -->
+            <div class="row mt-3">
+                <div class="col-md-6">
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle btn-full-width" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                          Use Pack Data
+                            Use Pack Data
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <li><a class="dropdown-item" href="#" onclick="selectPack('No Pack', '')">No Pack</a></li>
@@ -149,60 +342,25 @@
                             {% endif %}
                         </ul>
                     </div>
-                </div>
-            </div>
-            <br/>
-            <div class="row">
-                <div class="col-12">
                     <p id="selectedPack">No pack data being referenced :(</p>
                 </div>
-            </div>
-        </div>
-        <!-- Chatbot body -->
-        <div class="container mt-5" id="chatbotDisplay">
-            <!-- Toggle Switch -->
-            <div class="toggle-switch">
-                <input type="checkbox" id="toggle" class="toggle-checkbox">
-                <label for="toggle" class="toggle-label"></label>
-            </div>
-            <!--info icon-->
-            <div style="display: inline-flex; align-items: center;">
-                <p style="margin-right: 8px;">Chat Model</p>
-                <span tabindex="0" data-bs-toggle="popover" data-bs-trigger="focus" data-bs-placement="right" data-bs-content="You can query your code directly using our vector search algorithm or pass your data to our model for interpretation (recommended)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-square" viewBox="0 0 16 16">
-                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
-                        <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
-                    </svg>
-                </span>
-            </div>
-            
-            <br/>
-            <div class="card">
-                <div class="card-header">
-                    Chatbot
-                </div>
-                <div class="card-body" id="chatBody">
-                    <!-- Chat messages will go here -->
+                <div class="col-md-6 text-end">
+                    <select id="promptSelect" class="form-select mb-3" aria-label="Default select example" onchange="showCustomPrompt()">
+                        <option selected>Select prompt or "custom prompt" to use your own</option>
+                        <!-- Options will be dynamically generated -->
+                    </select>
+                    <div id="customPromptDiv" class="mt-3" style="display: none;">
+                        <textarea id="customPromptTextarea" class="form-control" rows="3" placeholder="Enter your custom prompt here..."></textarea>
+                    </div>
+                    <!-- Add the hidden input for queryVector -->
+                    <input type="hidden" id="queryVector" name="queryVector">
+                    <button type="button" class="btn btn-primary mt-3" id="submitPromptButton" onclick="submitPrompt()">Submit Prompt</button>
+                    <!-- Add the spinner element -->
+                    <div class="spinner-border text-primary" role="status" id="submitSpinner" style="display: none;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
             </div>
-        </div>
-        <!--Prompt form-->
-        <div class="container-md" id="promptForm">
-            <form id="promptFormInner" method="POST" action="javascript:void(0);" onsubmit="submitPrompt()">
-                <select id="promptSelect" class="form-select" aria-label="Default select example" onchange="showCustomPrompt()">
-                    <option selected>Select prompt or "custom prompt" to use your own</option>
-                    <!-- Options will be dynamically generated -->
-                </select>
-                <div id="customPromptDiv" class="mt-3" style="display: none;">
-                    <textarea id="customPromptTextarea" class="form-control" rows="3" placeholder="Enter your custom prompt here..."></textarea>
-                </div>
-                <input type="hidden" id="queryVector" name="queryVector">
-                <br/>
-                <button type="submit" class="btn btn-primary" id="submitPromptButton">Submit Prompt</button>
-                <div class="spinner-border text-primary" role="status" id="submitSpinner" style="display: none;">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </form>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -249,6 +407,11 @@
             const selectElement = document.getElementById('promptSelect');
             const customPromptTextarea = document.getElementById('customPromptTextarea');
             const queryVectorInput = document.getElementById('queryVector');
+    
+            if (!queryVectorInput) {
+                console.error('Element with ID "queryVector" not found.');
+                return;
+            }
     
             if (selectElement.value === 'Custom Prompt') {
                 queryVectorInput.value = customPromptTextarea.value;
@@ -438,10 +601,5 @@
             }, 5000);
         }
     </script>
-    
-    
-    
-    
-    
 </body>
 </html>
