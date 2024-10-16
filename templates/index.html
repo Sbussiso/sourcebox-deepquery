@@ -6,22 +6,62 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <title>DeepQuery</title>
     <style>
+        /* ---- reset ---- */
+        body {
+            margin: 0;
+            font: normal 75% Arial, Helvetica, sans-serif;
+        }
+        canvas {
+            display: block;
+            vertical-align: bottom;
+        }
+        /* ---- particles.js container ---- */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #20081b;
+            background-image: url("https://i.imgur.com/E6kBKHI.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: 50% 50%;
+        }
+        /* ---- stats.js ---- */
+        .count-particles {
+            background: #000022;
+            position: absolute;
+            top: 48px;
+            left: 0;
+            width: 80px;
+            color: #13E8E9;
+            font-size: .8em;
+            text-align: left;
+            text-indent: 4px;
+            line-height: 14px;
+            padding-bottom: 2px;
+            font-family: Helvetica, Arial, sans-serif;
+            font-weight: bold;
+        }
+        .js-count-particles {
+            font-size: 1.1em;
+        }
+        #stats, .count-particles {
+            -webkit-user-select: none;
+            margin-top: 5px;
+            margin-left: 5px;
+        }
+        #stats {
+            border-radius: 3px 3px 0 0;
+            overflow: hidden;
+        }
+        .count-particles {
+            border-radius: 0 0 3px 3px;
+        }
         /* General Styles */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: radial-gradient(circle, #000000, #ffffff);
-            background-size: 200% 200%;
-            animation: smokeAnimation 15s ease infinite;
             color: #343a40;
             transition: background-color 0.3s, color 0.3s;
-        }
-
-        @keyframes smokeAnimation {
-            0% { background-position: 0% 0%; }
-            25% { background-position: 50% 50%; }
-            50% { background-position: 100% 100%; }
-            75% { background-position: 50% 50%; }
-            100% { background-position: 0% 0%; }
         }
 
         .text-white {
@@ -116,7 +156,7 @@
         .toggle-label {
             position: absolute;
             cursor: pointer;
-            background-color: #ccc;
+            background-color: transparent;
             border-radius: 34px;
             width: 100%;
             height: 100%;
@@ -178,7 +218,7 @@
         /* Chatbot Display */
         #chatbotDisplay {
             padding: 20px;
-            background: linear-gradient(135deg, #333333, #1a1a1a); /* Dark gradient for base */
+            background: transparent; /* Set background to transparent */
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             position: relative;
@@ -223,9 +263,8 @@
             max-height: 70vh; /* Adjust this value as needed */
             overflow-y: auto;
             height: 70vh; /* Increased height for more conversation space */
-            background: radial-gradient(circle, #ffffff, #000000); /* Same background as body */
+            background: transparent; /* Same background as body */
             background-size: 200% 200%; /* Same background size */
-            animation: smokeAnimation 15s ease infinite; /* Same animation */
         }
         #loadingSpinner {
             display: none; /* Hide the spinner by default */
@@ -233,7 +272,7 @@
 
         /*chatbot formatting*/
         pre {
-            background-color: #f4f4f4;
+            background-color: transparent;
             padding: 10px;
             border-radius: 5px;
             white-space: pre-wrap; /* This ensures text wraps */
@@ -242,7 +281,7 @@
         }
 
         code {
-            background-color: #f9f2f4;
+            background-color: transparent;
             padding: 2px 4px;
             border-radius: 3px;
             white-space: pre-wrap; /* Ensure inline code wraps */
@@ -283,6 +322,7 @@
                 max-width: 80%;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                 transition: transform 0.3s ease, opacity 0.3s ease;
+                font-size: 1.2em; /* Increase font size */
             }
 
             .chat-message.user {
@@ -297,8 +337,8 @@
 
             /* Hover effect for chat messages */
             .chat-message:hover {
-                transform: scale(1.05) translateY(0);
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                transform: scale(1.05);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
             }
         }
 
@@ -321,10 +361,77 @@
             transform: scale(1.05);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
+
+        /* Chatbot container */
+        #chatbotDisplay {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            background: none;
+            box-shadow: none;
+            border: none;
+        }
+
+        /* Chat body */
+        #chatBody {
+            flex-grow: 1;
+            overflow-y: auto;
+            max-height: 70vh; /* Adjust as needed */
+            padding: 10px;
+        }
+
+        /* Controls area */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #20081b;
+            border-radius: 8px;
+        }
+
+        .controls > * {
+            margin: 5px;
+        }
+
+        /* Chat message styling */
+        .chat-message {
+            background: linear-gradient(135deg, #f4f4f4, #e2e3e5);
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            max-width: 90%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            font-size: 1.2em;
+        }
+
+        .chat-message.user {
+            background-color: #d1e7dd;
+            align-self: flex-end;
+            font-size: 1.2em;
+        }
+
+        .chat-message.ai {
+            background-color: #e2e3e5;
+            align-self: flex-start;
+            font-size: 1.2em;
+        }
+
+        .chat-message:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
     </style>
 </head>
 <body>
-    <div class="p-5">
+    <div id="particles-js"></div>
+    <div class="count-particles">
+        <span class="js-count-particles">--</span> particles
+    </div>
+    <div class="p-5" style="background: #20081b;">
         <!-- Flash messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -340,7 +447,7 @@
         {% endwith %}
 
         <!-- Chatbot body -->
-        <div class="container mt-5" id="chatbotDisplay">
+        <div class="container mt-5 border border-secondary rounded p-1" id="chatbotDisplay">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div class="d-flex align-items-center">
                     <!-- Toggle Switch -->
@@ -363,14 +470,8 @@
                 <button type="button" id="sourceboxHome" class="btn btn-danger" onclick="goToHome()">Back to Home</button>
             </div>
             
-            <div class="card">
-                <div class="card-header">
-                    Chatbot
-                </div>
-                
-                <div class="card-body" id="chatBody">
-                    <!-- Chat messages will go here -->
-                </div>
+            <div class="fs-4" id="chatBody">
+                <!-- Chat messages will go here -->
             </div>
 
             <!-- New row for prompt selection and buttons -->
@@ -413,6 +514,8 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://threejs.org/examples/js/libs/stats.min.js"></script>
     <script>
         // SourceBox home button
         function goToHome() {
@@ -653,6 +756,135 @@
                 flashMessageContainer.addEventListener('transitionend', () => flashMessageContainer.remove());
             }, 5000);
         }
+
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 60,
+                    "density": {
+                        "enable": true,
+                        "value_area": 631.3181133058181
+                    }
+                },
+                "color": {
+                    "value": "#7d1959"
+                },
+                "shape": {
+                    "type": "edge",
+                    "stroke": {
+                        "width": 1,
+                        "color": "#111dde"
+                    },
+                    "polygon": {
+                        "nb_sides": 3
+                    },
+                    "image": {
+                        "src": "img/github.svg",
+                        "width": 100,
+                        "height": 100
+                    }
+                },
+                "opacity": {
+                    "value": 0.49716301422833176,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 5.7,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 160.3412060865523,
+                    "color": "#ec2a3b",
+                    "opacity": 0.4008530152163807,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 3,
+                    "direction": "none",
+                    "random": true,
+                    "straight": false,
+                    "out_mode": "bounce",
+                    "bounce": false,
+                    "attract": {
+                        "enable": true,
+                        "rotateX": 1763.753266952075,
+                        "rotateY": 1603.4120608655228
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 400,
+                        "line_linked": {
+                            "opacity": 0.156297557645007
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 0.09744926547616141,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+
+        var count_particles, stats, update;
+        stats = new Stats;
+        stats.setMode(0);
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.left = '0px';
+        stats.domElement.style.top = '0px';
+        document.body.appendChild(stats.domElement);
+        count_particles = document.querySelector('.js-count-particles');
+        update = function() {
+            stats.begin();
+            stats.end();
+            if (window.pJSDom[0].pJS.particles && window.pJSDom[0].pJS.particles.array) {
+                count_particles.innerText = window.pJSDom[0].pJS.particles.array.length;
+            }
+            requestAnimationFrame(update);
+        };
+        requestAnimationFrame(update);
     </script>
 </body>
 </html>
